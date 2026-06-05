@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import 'leaflet/dist/leaflet.css';
 import MetricsPanel from './components/MetricsPanel';
 import MapView from './components/MapView';
 import StoryForm from './components/StoryForm';
 import StoryList from './components/StoryList';
-import { analyzeLocation } from './apiClient';
+import { analyzeLocation, getStories } from './apiClient';
 import ClimateReporter from './components/ClimateReporter';
 
 export default function App() {
@@ -13,10 +14,21 @@ export default function App() {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [selectedStoryId, setSelectedStoryId] = useState(null);
+  const [stories, setStories] = useState([]);
 
   useEffect(() => {
     handleLocationSelect(28.6139, 77.2090);
+    fetchStories();
   }, []);
+
+  const fetchStories = async () => {
+    try {
+      const res = await getStories();
+      setStories(res.stories || []);
+    } catch {
+      setStories([]);
+    }
+  };
 
   const handleLocationSelect = async (lat, lng) => {
     setSelectedPosition([lat, lng]);
@@ -32,26 +44,33 @@ export default function App() {
     }
   };
 
+  const handleStorySubmitted = () => {
+    fetchStories();
+  };
+
   const renderContent = () => {
-    
     if (activeTab === 'Dashboard') {
       return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
           <div className="lg:col-span-3 space-y-8">
             <MetricsPanel data={climateData} isLoading={loading} error={error} />
-            <div className="min-h-[400px]">
-               <MapView onLocationSelect={handleLocationSelect} currentPin={selectedPosition} />
+            <div className="h-[500px] w-full">
+              <MapView
+                onLocationSelect={handleLocationSelect}
+                currentPin={selectedPosition}
+                stories={stories}
+              />
             </div>
           </div>
-
           <div className="space-y-8 lg:col-span-1">
-            <StoryList 
-              selectedStoryId={selectedStoryId} 
-              onSelectStory={setSelectedStoryId} 
+            <StoryList
+              selectedStoryId={selectedStoryId}
+              onSelectStory={setSelectedStoryId}
             />
-            <StoryForm 
-              latitude={selectedPosition?.[0] || null} 
-              longitude={selectedPosition?.[1] || null} 
+            <StoryForm
+              latitude={selectedPosition?.[0] || null}
+              longitude={selectedPosition?.[1] || null}
+              onSubmitted={handleStorySubmitted}
             />
           </div>
         </div>
@@ -64,16 +83,27 @@ export default function App() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-white">Global Radar</h2>
-              <p className="text-slate-400 text-sm mt-1">Select any point on Earth to run a real-time Vanguard Engine analysis.</p>
+              <p className="text-slate-400 text-sm mt-1">
+                Select any point on India to run a real-time Vanguard Engine analysis.
+              </p>
             </div>
             {selectedPosition && (
-               <div className="bg-slate-800/50 border border-slate-700 px-4 py-2 rounded-xl text-sm font-mono text-brand-cyan">
-                  LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
-               </div>
+              <div className="bg-slate-800/50 border border-slate-700 px-4 py-2 rounded-xl text-sm font-mono text-brand-cyan">
+                LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
+              </div>
             )}
           </div>
+
+          {(climateData || loading || error) && (
+            <MetricsPanel data={climateData} isLoading={loading} error={error} />
+          )}
+
           <div className="h-[65vh] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
-              <MapView onLocationSelect={handleLocationSelect} currentPin={selectedPosition} />
+            <MapView
+              onLocationSelect={handleLocationSelect}
+              currentPin={selectedPosition}
+              stories={stories}
+            />
           </div>
         </div>
       );
@@ -82,22 +112,25 @@ export default function App() {
     if (activeTab === 'Stories') {
       return (
         <div className="animate-fade-in max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-           <div className="space-y-6">
-              <div className="bg-brand-cyan/10 border border-brand-cyan/30 p-6 rounded-3xl">
-                <h2 className="text-xl font-semibold text-white mb-2">Submit Intel</h2>
-                <p className="text-slate-400 text-sm mb-6">Your survival strategies are verified by AI before joining the global database.</p>
-                <StoryForm 
-                  latitude={selectedPosition?.[0] || null} 
-                  longitude={selectedPosition?.[1] || null} 
-                />
-              </div>
-           </div>
-           <div>
-              <StoryList 
-                selectedStoryId={selectedStoryId} 
-                onSelectStory={setSelectedStoryId} 
+          <div className="space-y-6">
+            <div className="bg-brand-cyan/10 border border-brand-cyan/30 p-6 rounded-3xl">
+              <h2 className="text-xl font-semibold text-white mb-2">Submit Intel</h2>
+              <p className="text-slate-400 text-sm mb-6">
+                Your survival strategies are verified by AI before joining the global database.
+              </p>
+              <StoryForm
+                latitude={selectedPosition?.[0] || null}
+                longitude={selectedPosition?.[1] || null}
+                onSubmitted={handleStorySubmitted}
               />
-           </div>
+            </div>
+          </div>
+          <div>
+            <StoryList
+              selectedStoryId={selectedStoryId}
+              onSelectStory={setSelectedStoryId}
+            />
+          </div>
         </div>
       );
     }
@@ -116,15 +149,15 @@ export default function App() {
         <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mt-2">
           Vanguard Earth: Premium analytics for survival intelligence
         </p>
-        
+
         <nav className="flex justify-center gap-1.5 mt-8 bg-bg-card p-1 rounded-full border border-slate-800 w-fit mx-auto shadow-sm">
           {['Dashboard', 'Reports', 'Map', 'Stories'].map(tab => (
-            <button 
-              key={tab} 
+            <button
+              key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 text-xs font-mono uppercase tracking-wider rounded-full transition duration-300 ${
-                activeTab === tab 
-                  ? 'bg-slate-700 text-white shadow-inner scale-105' 
+                activeTab === tab
+                  ? 'bg-slate-700 text-white shadow-inner scale-105'
                   : 'hover:bg-slate-800 hover:text-white text-slate-500'
               }`}
             >

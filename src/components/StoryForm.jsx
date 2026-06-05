@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { submitStory } from '../apiClient';
 
-export default function StoryForm({ latitude = null, longitude = null }) {
+export default function StoryForm({ latitude = null, longitude = null, onSubmitted }) {
   const [authorName, setAuthorName] = useState('');
   const [location, setLocation] = useState('');
   const [storyText, setStoryText] = useState('');
@@ -28,10 +28,11 @@ export default function StoryForm({ latitude = null, longitude = null }) {
         story_text: storyText.trim(),
       });
 
-      setStatus({ type: 'success', message: 'Story submitted successfully.' });
+      setStatus({ type: 'success', message: 'Story verified and added to the public map.' });
       setAuthorName('');
       setLocation('');
       setStoryText('');
+      onSubmitted?.();
     } catch (error) {
       setStatus({
         type: 'error',
@@ -92,7 +93,11 @@ export default function StoryForm({ latitude = null, longitude = null }) {
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 shadow-[0_10px_24px_rgba(15,23,42,0.35)]">
           <p className="font-medium text-slate-100">Selected coordinates</p>
-          <p className="mt-1 text-slate-400">{latitude !== null && longitude !== null ? `Latitude: ${latitude} · Longitude: ${longitude}` : 'Choose a location on the map to enable story submission.'}</p>
+          <p className="mt-1 text-slate-400">
+            {latitude !== null && longitude !== null
+              ? `Latitude: ${latitude} · Longitude: ${longitude}`
+              : 'Choose a location on the map to enable story submission.'}
+          </p>
         </div>
 
         <button
@@ -102,11 +107,11 @@ export default function StoryForm({ latitude = null, longitude = null }) {
         >
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" opacity="0.25" />
                 <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              Submitting...
+              Verifying with AI...
             </span>
           ) : (
             'Submit story'
