@@ -54,7 +54,8 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
           <div className="lg:col-span-3 space-y-8">
             <MetricsPanel data={climateData} isLoading={loading} error={error} />
-            <div className="h-[500px] w-full">
+            {/* Added a light border and shadow here for the map container */}
+            <div className="h-[500px] w-full rounded-3xl overflow-hidden border border-stone-300 shadow-md">
               <MapView
                 onLocationSelect={handleLocationSelect}
                 currentPin={selectedPosition}
@@ -82,13 +83,13 @@ export default function App() {
         <div className="animate-fade-in space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-white">Global Radar</h2>
-              <p className="text-slate-400 text-sm mt-1">
+              <h2 className="text-2xl font-semibold text-stone-900">Global Radar</h2>
+              <p className="text-stone-500 text-sm mt-1">
                 Select any point on India to run a real-time Vanguard Engine analysis.
               </p>
             </div>
             {selectedPosition && (
-              <div className="bg-slate-800/50 border border-slate-700 px-4 py-2 rounded-xl text-sm font-mono text-brand-cyan">
+              <div className="bg-white border border-stone-300 px-4 py-2 rounded-xl text-sm font-mono text-emerald-700 shadow-sm">
                 LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
               </div>
             )}
@@ -98,7 +99,7 @@ export default function App() {
             <MetricsPanel data={climateData} isLoading={loading} error={error} />
           )}
 
-          <div className="h-[65vh] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
+          <div className="h-[65vh] rounded-3xl overflow-hidden border border-stone-300 shadow-xl">
             <MapView
               onLocationSelect={handleLocationSelect}
               currentPin={selectedPosition}
@@ -113,9 +114,9 @@ export default function App() {
       return (
         <div className="animate-fade-in max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <div className="bg-brand-cyan/10 border border-brand-cyan/30 p-6 rounded-3xl">
-              <h2 className="text-xl font-semibold text-white mb-2">Submit Intel</h2>
-              <p className="text-slate-400 text-sm mb-6">
+            <div className="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm">
+              <h2 className="text-xl font-semibold text-stone-900 mb-2">Submit Intel</h2>
+              <p className="text-stone-500 text-sm mb-6">
                 Your survival strategies are verified by AI before joining the global database.
               </p>
               <StoryForm
@@ -141,35 +142,42 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-panel text-slate-200 selection:bg-brand-cyan/20 selection:text-white p-4 md:p-8">
-      <header className="text-center mb-10 border-b border-slate-800 pb-6">
-        <h1 className="text-5xl font-extrabold tracking-tighter text-white animate-fade-in">
-          Climate OS
-        </h1>
-        <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mt-2">
-          Vanguard Earth: Premium analytics for survival intelligence
-        </p>
+    // Gradient remains anchored at amber-700 for the earthy depth.
+    <div className="min-h-screen bg-amber-700 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-200 via-amber-500 to-amber-700 text-amber-950 selection:bg-emerald-600 selection:text-white transition-colors duration-500 relative overflow-hidden">
+      
+      {/* Wood Grain Overlay: Reduced to 0.08—barely a suggestion of texture for maximum visual clarity */}
+      <div 
+        className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-multiply" 
+        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/wood-pattern.png')" }}
+      ></div>
 
-        <nav className="flex justify-center gap-1.5 mt-8 bg-bg-card p-1 rounded-full border border-slate-800 w-fit mx-auto shadow-sm">
-          {['Dashboard', 'Reports', 'Map', 'Stories'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 text-xs font-mono uppercase tracking-wider rounded-full transition duration-300 ${
-                activeTab === tab
-                  ? 'bg-slate-700 text-white shadow-inner scale-105'
-                  : 'hover:bg-slate-800 hover:text-white text-slate-500'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-      </header>
+      {/* Main Content Container */}
+      <div className="relative z-10 p-4 md:p-8">
+        <header className="text-center mb-10 border-b border-amber-950/10 pb-6">
+          <h1 className="text-5xl font-extrabold tracking-tighter text-[#2C1E16] animate-fade-in drop-shadow-sm">
+            VanGuard Earth
+          </h1>
+          <nav className="flex justify-center gap-1.5 mt-8 bg-[#2C1E16]/5 backdrop-blur-md p-1 rounded-full border border-amber-950/10 w-fit mx-auto shadow-sm">
+            {['Dashboard', 'Reports', 'Map', 'Stories'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-5 py-2 text-xs font-mono uppercase tracking-wider rounded-full transition duration-300 ${
+                  activeTab === tab
+                    ? 'bg-[#2C1E16] text-amber-50 shadow-inner scale-105 font-bold'
+                    : 'hover:bg-[#2C1E16]/10 hover:text-[#2C1E16] text-[#5C4B3C] font-semibold'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </header>
 
-      <main>
-        {renderContent()}
-      </main>
+        <main>
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 }

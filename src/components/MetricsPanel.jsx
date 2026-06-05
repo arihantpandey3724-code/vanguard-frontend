@@ -53,12 +53,21 @@ export default function MetricsPanel({ data, isLoading, error }) {
         ? 'from-amber-400 via-orange-500 to-rose-500'
         : 'from-emerald-400 via-teal-500 to-cyan-500'
 
+
+  const envImages = {
+    SAFE: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200", // Lush green mountains
+    WARNING: "https://images.unsplash.com/photo-1544866635-f093a2019ea4?auto=format&fit=crop&q=80&w=1200", // Dry yellow agricultural field
+    CRITICAL: "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=1200", // Cracked, barren earth
+  };
+
+  const currentImage = envImages[trend] || envImages.SAFE;
+
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="rounded-lg border border-white/20 bg-slate-950/90 p-2 backdrop-blur">
-          <p className="text-xs text-cyan-300">{payload[0].payload.month || payload[0].payload.name}</p>
-          <p className="text-sm font-semibold text-white">{payload[0].value}</p>
+        <div className="rounded-lg border border-stone-200 bg-white/90 p-2 backdrop-blur shadow-md">
+          <p className="text-xs text-stone-500 font-medium">{payload[0].payload.month || payload[0].payload.name}</p>
+          <p className="text-sm font-bold text-stone-800">{payload[0].value}</p>
         </div>
       )
     }
@@ -66,78 +75,97 @@ export default function MetricsPanel({ data, isLoading, error }) {
   }
 
   return (
-    <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))] p-6 text-slate-100 shadow-[0_22px_55px_rgba(8,15,32,0.55)] backdrop-blur-xl animate-fade-in w-full max-w-4xl">
+    // Changed from dark navy to light stone-50, text to stone-800
+    <section className="rounded-[30px] border border-stone-200 bg-stone-50 p-6 text-stone-800 shadow-[0_22px_55px_rgba(0,0,0,0.08)] backdrop-blur-xl animate-fade-in w-full max-w-4xl">
+      
+      {/* HEADER SECTION */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-300">Analytics</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-white">Resilience overview</h2>
-          <p className="mt-2 text-sm text-slate-400">Graphical signals from the latest backend analysis.</p>
+          {/* Changed text colors to light theme equivalents */}
+          <p className="text-[11px] uppercase tracking-[0.35em] text-emerald-600 font-bold">Analytics</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight text-stone-900">Resilience overview</h2>
+          <p className="mt-2 text-sm text-stone-500">Graphical signals from the latest backend analysis.</p>
         </div>
-        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-emerald-100">Updated live</span>
+        <span className="rounded-full border border-emerald-600/30 bg-emerald-100 px-3 py-1 text-[11px] uppercase tracking-[0.25em] text-emerald-800 font-bold">Updated live</span>
       </div>
 
-      {error ? <div className="mt-5 rounded-2xl border border-rose-400/30 bg-rose-400/10 p-4 text-sm text-rose-100">{error}</div> : null}
-      {isLoading ? <div className="mt-5 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 p-4 text-sm text-cyan-100">Analyzing the selected location from the backend…</div> : null}
+      <div className="mt-6 w-full h-48 sm:h-64 rounded-[24px] overflow-hidden shadow-md border border-stone-200 relative">
+        <img 
+          src={currentImage} 
+          alt={`Environmental state: ${trend}`} 
+          className="w-full h-full object-cover transition-opacity duration-700"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        
+        <div className="absolute bottom-4 left-4 right-4 text-white">
+           <p className="text-sm md:text-base font-medium italic drop-shadow-md">
+             "We are the first generation to feel the effect of climate change and the last generation who can do something about it."
+           </p>
+           <p className="text-xs mt-1 opacity-80 uppercase tracking-widest drop-shadow-md">— Barack Obama</p>
+        </div>
+      </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className={`rounded-[28px] border border-white/10 bg-gradient-to-br ${tone} p-5 text-white shadow-[0_18px_45px_rgba(15,23,42,0.45)] transition-all duration-300 hover:scale-[1.02]`}>
-          <p className="text-xs uppercase tracking-[0.35em] text-white/80">Total status</p>
+      {error ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 font-medium">{error}</div> : null}
+      {isLoading ? <div className="mt-5 rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm text-cyan-800 font-medium">Analyzing the selected location from the backend…</div> : null}
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <article className={`rounded-[28px] border border-stone-200 bg-gradient-to-br ${tone} p-5 text-white shadow-lg transition-all duration-300 hover:scale-[1.02]`}>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/90 font-medium">Total status</p>
           <h3 className="mt-3 text-4xl font-black tracking-tight md:text-5xl"><AnimatedNumber value={habitability} />%</h3>
-          <p className="mt-2 text-sm text-white/85">Habitability score</p>
-          <div className="mt-5 h-2 w-full rounded-full bg-white/20">
+          <p className="mt-2 text-sm text-white/90">Habitability score</p>
+          <div className="mt-5 h-2 w-full rounded-full bg-black/20">
             <div className="h-2 rounded-full bg-white transition-all duration-1000" style={{ width: `${habitability}%` }} />
           </div>
-          <p className="mt-3 text-xs uppercase tracking-[0.25em] text-white/80">Status: {trend}</p>
+          <p className="mt-3 text-xs uppercase tracking-[0.25em] text-white/90 font-medium">Status: {trend}</p>
         </article>
 
         <article className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
           {[
-            { label: 'Wet Bulb Temp', value: `${wetBulb}°C`, badge: 'Live reading', tone: 'text-emerald-300' },
-            { label: 'Water Stress', value: `${waterStress}%`, badge: 'Domino effect', tone: 'text-amber-300' },
-            { label: 'Collapse Year', value: collapseYear, badge: 'Projected trend', tone: 'text-cyan-300' },
-            { label: 'Utility Surge', value: `${utility}%`, badge: 'Peak demand', tone: 'text-violet-300' },
+            { label: 'Wet Bulb Temp', value: `${wetBulb}°C`, badge: 'Live reading', tone: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+            { label: 'Water Stress', value: `${waterStress}%`, badge: 'Domino effect', tone: 'text-amber-700 bg-amber-50 border-amber-200' },
+            { label: 'Collapse Year', value: collapseYear, badge: 'Projected trend', tone: 'text-cyan-700 bg-cyan-50 border-cyan-200' },
+            { label: 'Utility Surge', value: `${utility}%`, badge: 'Peak demand', tone: 'text-violet-700 bg-violet-50 border-violet-200' },
           ].map((item) => (
-            <div key={item.label} className="rounded-[24px] border border-white/10 bg-white/5 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.35)] transition-all duration-300 hover:scale-[1.02] hover:border-cyan-400/30 hover:bg-white/8">
-              <p className="text-xs uppercase tracking-[0.25em] text-slate-400">{item.label}</p>
-              <p className="mt-3 text-2xl font-black text-white">{item.value}</p>
-              <span className={`mt-3 inline-flex rounded-full border border-slate-800 bg-slate-800/80 px-3 py-1 text-[11px] ${item.tone}`}>{item.badge}</span>
+            <div key={item.label} className="rounded-[24px] border border-stone-200 bg-white p-4 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:border-emerald-300 hover:shadow-md">
+              <p className="text-xs uppercase tracking-[0.25em] text-stone-500 font-medium">{item.label}</p>
+              <p className="mt-3 text-2xl font-black text-stone-800">{item.value}</p>
+              <span className={`mt-3 inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold ${item.tone}`}>{item.badge}</span>
             </div>
           ))}
         </article>
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
-        <article className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Habitability trend</p>
+        <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Habitability trend</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
                 <defs>
                   <linearGradient id="habitability" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.6} />
-                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="month" stroke="#64748b" />
-                <YAxis stroke="#64748b" domain={[60, 80]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" domain={[60, 80]} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="habitability" stroke="#22d3ee" strokeWidth={2} fillOpacity={1} fill="url(#habitability)" isAnimationActive={true} />
+                <Area type="monotone" dataKey="habitability" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#habitability)" isAnimationActive={true} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </article>
 
-        <article className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Stress indicators</p>
+        <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Stress indicators</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="month" stroke="#64748b" />
-                <YAxis stroke="#64748b" domain={[40, 65]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" domain={[40, 65]} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="stress" stroke="#f97316" strokeWidth={2} dot={{ fill: '#f97316', r: 4 }} isAnimationActive={true} />
+                <Line type="monotone" dataKey="stress" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4 }} isAnimationActive={true} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -145,34 +173,34 @@ export default function MetricsPanel({ data, isLoading, error }) {
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Climate metrics</p>
+        <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Climate metrics</p>
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={metricsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="name" stroke="#64748b" />
-                <YAxis stroke="#64748b" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#06b6d4" radius={[8, 8, 0, 0]} isAnimationActive={true} />
+                <Bar dataKey="value" fill="#0ea5e9" radius={[8, 8, 0, 0]} isAnimationActive={true} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </article>
 
-        <article className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Domino effect</p>
-          <div className="mt-5 space-y-5">
+        <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Domino effect</p>
+          <div className="mt-5 space-y-6">
             {[
-              { label: 'Crop Yield Loss', value: cropLoss, color: 'from-emerald-400 to-cyan-500' },
-              { label: 'Migration Pressure', value: migrationPressure, color: 'from-rose-400 to-orange-500' },
+              { label: 'Crop Yield Loss', value: cropLoss, color: 'from-emerald-400 to-teal-500' },
+              { label: 'Migration Pressure', value: migrationPressure, color: 'from-amber-400 to-orange-500' },
             ].map((item) => (
               <div key={item.label}>
-                <div className="mb-2 flex items-center justify-between text-sm text-slate-200">
-                  <span>{item.label}</span>
-                  <strong><AnimatedNumber value={item.value} />%</strong>
+                <div className="mb-2 flex items-center justify-between text-sm text-stone-700">
+                  <span className="font-medium">{item.label}</span>
+                  <strong className="text-stone-900"><AnimatedNumber value={item.value} />%</strong>
                 </div>
-                <div className="h-3 w-full rounded-full bg-slate-800 overflow-hidden">
+                <div className="h-3 w-full rounded-full bg-stone-200 overflow-hidden shadow-inner">
                   <div className={`h-3 rounded-full bg-gradient-to-r ${item.color} transition-all duration-1000`} style={{ width: `${item.value}%` }} />
                 </div>
               </div>
@@ -181,12 +209,11 @@ export default function MetricsPanel({ data, isLoading, error }) {
         </article>
       </div>
 
-      <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Prevention blueprints</p>
+      <div className="mt-6 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+        <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Prevention blueprints</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          {/* DYNAMIC BLUEPRINTS HOOKED UP HERE */}
           {(data?.prevention_blueprints || ['Shaded water systems', 'Cool corridor design', 'Migration routing', 'Crop resilience']).map((tag) => (
-            <span key={tag} className="rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1 text-xs text-slate-200">{tag}</span>
+            <span key={tag} className="rounded-full border border-stone-300 bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">{tag}</span>
           ))}
         </div>
       </div>
