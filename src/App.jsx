@@ -1,8 +1,35 @@
-// src/App.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MetricsPanel from './components/MetricsPanel';
+import MapView from './components/MapView';
+import { analyzeLocation } from './apiClient';
 
 export default function App() {
+  // --- CORE STATE & LOGIC ---
+  const [climateData, setClimateData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState(null);
+
+  // Auto-load Delhi coordinates on startup
+  useEffect(() => {
+    handleLocationSelect(28.6139, 77.2090);
+  }, []);
+
+  const handleLocationSelect = async (lat, lng) => {
+    setSelectedPosition([lat, lng]);
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await analyzeLocation(lat, lng);
+      setClimateData(data);
+    } catch (err) {
+      setError("Failed to connect to the Vanguard Engine. Ensure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- UI RENDER ---
   return (
     <div className="min-h-screen bg-bg-panel text-slate-200 selection:bg-brand-cyan/20 selection:text-white p-4 md:p-8">
       
@@ -28,15 +55,20 @@ export default function App() {
       {/* Main Grid Layout */}
       <main className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
-        {/* Left Column (Main Metrics) */}
+        {/* Left Column (Main Metrics & Map) */}
         <div className="lg:col-span-3 space-y-8">
-          <MetricsPanel />
-          {/* Map view component goes here below the metrics */}
+          {/* Passed the live data props to MetricsPanel */}
+          <MetricsPanel data={climateData} isLoading={loading} error={error} />
+          
+          {/* Map view component hooked up to state */}
+          <div className="min-h-[400px]">
+             <MapView onLocationSelect={handleLocationSelect} currentPin={selectedPosition} />
+          </div>
         </div>
 
         {/* Right Sidebar (Forms / Chat / Feeds) */}
         <div className="space-y-8 lg:col-span-1">
-          {/* Component for Live Story Feed - Use a simple text list card style for now */}
+          {/* Component for Live Story Feed */}
           <section className="p-6 bg-bg-card border border-slate-800 rounded-2xl animate-fade-in shadow-sm">
             <h3 className="text-sm font-semibold tracking-wider font-mono text-brand-amber flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-brand-amber animate-pulse"></div>
@@ -47,7 +79,7 @@ export default function App() {
             </div>
           </section>
 
-          {/* Component for Story Submission Form - Use floating labels or clean input fields */}
+          {/* Component for Story Submission Form */}
           <section className="p-6 bg-bg-card border border-slate-800 rounded-2xl animate-fade-in shadow-sm">
             <h3 className="text-sm font-semibold tracking-wider font-mono text-slate-300">Submit a Story</h3>
             <form className="mt-5 space-y-3">

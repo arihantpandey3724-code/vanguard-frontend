@@ -24,13 +24,13 @@ function AnimatedNumber({ value, duration = 1500 }) {
 
 export default function MetricsPanel({ data, isLoading, error }) {
   const habitability = data?.habitability_score ?? 72
-  const wetBulb = data?.wet_bulb_temp ?? 31
-  const waterStress = data?.water_stress ?? 58
-  const collapseYear = data?.collapse_year ?? 2045
-  const cropLoss = data?.crop_yield_loss ?? 36
-  const migrationPressure = data?.migration_pressure ?? 64
+  const wetBulb = data?.metrics?.current_wet_bulb_celsius ?? 31
+  const waterStress = data?.domino_effect?.water_stress_index ?? 58
+  const collapseYear = data?.timeline?.collapse_year ?? 2045
+  const cropLoss = data?.domino_effect?.crop_yield_loss_percent ?? 36
+  const migrationPressure = data?.domino_effect?.migration_pressure_score ?? 64
   const trend = data?.status || 'SAFE'
-  const utility = data?.destination_utility_surge ?? 68
+  const utility = data?.migration_pipeline?.destination_utility_surge_percent ?? 68
 
   const trendData = [
     { month: 'Now', habitability, stress: waterStress },
@@ -66,7 +66,7 @@ export default function MetricsPanel({ data, isLoading, error }) {
   }
 
   return (
-    <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))] p-6 text-slate-100 shadow-[0_22px_55px_rgba(8,15,32,0.55)] backdrop-blur-xl animate-fade-in">
+    <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(145deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))] p-6 text-slate-100 shadow-[0_22px_55px_rgba(8,15,32,0.55)] backdrop-blur-xl animate-fade-in w-full max-w-4xl">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-300">Analytics</p>
@@ -92,8 +92,8 @@ export default function MetricsPanel({ data, isLoading, error }) {
 
         <article className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
           {[
-            { label: 'Wet Bulb Temp', value: `${wetBulb}°C`, badge: '+8% vs last year', tone: 'text-emerald-300' },
-            { label: 'Water Stress', value: `${waterStress}%`, badge: '+5% pressure', tone: 'text-amber-300' },
+            { label: 'Wet Bulb Temp', value: `${wetBulb}°C`, badge: 'Live reading', tone: 'text-emerald-300' },
+            { label: 'Water Stress', value: `${waterStress}%`, badge: 'Domino effect', tone: 'text-amber-300' },
             { label: 'Collapse Year', value: collapseYear, badge: 'Projected trend', tone: 'text-cyan-300' },
             { label: 'Utility Surge', value: `${utility}%`, badge: 'Peak demand', tone: 'text-violet-300' },
           ].map((item) => (
@@ -184,7 +184,8 @@ export default function MetricsPanel({ data, isLoading, error }) {
       <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.35)]">
         <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Prevention blueprints</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          {['Shaded water systems', 'Cool corridor design', 'Migration routing', 'Crop resilience'].map((tag) => (
+          {/* DYNAMIC BLUEPRINTS HOOKED UP HERE */}
+          {(data?.prevention_blueprints || ['Shaded water systems', 'Cool corridor design', 'Migration routing', 'Crop resilience']).map((tag) => (
             <span key={tag} className="rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1 text-xs text-slate-200">{tag}</span>
           ))}
         </div>

@@ -1,14 +1,4 @@
-import { useState, useEffect } from 'react'
-
-function PulsingDot({ x, y, color, label, onClick }) {
-  return (
-    <g onClick={onClick} style={{ cursor: 'pointer' }}>
-      <circle cx={x} cy={y} r="8" fill={color} opacity="0.3" className="animate-pulse" />
-      <circle cx={x} cy={y} r="5" fill={color} className="drop-shadow-lg" />
-      <title>{label}</title>
-    </g>
-  )
-}
+import { useState } from 'react'
 
 function AnimatedWave({ cx, cy, delay }) {
   return (
@@ -30,16 +20,17 @@ function AnimatedWave({ cx, cy, delay }) {
 
 export default function MapView({ onLocationSelect, currentPin }) {
   const [hoveredPin, setHoveredPin] = useState(null)
+  
   const zonePoints = [
-    { x: 240, y: 140, color: '#22d3ee', label: 'Primary zone', coords: [31.1471, 75.3412] },
-    { x: 150, y: 90, color: '#ec4899', label: 'Risk zone', coords: [28.6139, 77.2090] },
-    { x: 480, y: 100, color: '#10b981', label: 'Safe zone', coords: [40.7128, -74.0060] },
-    { x: 650, y: 200, color: '#f59e0b', label: 'Caution zone', coords: [19.0760, 72.8777] },
-    { x: 120, y: 240, color: '#8b5cf6', label: 'Data point', coords: [13.0827, 80.2707] },
+    { x: 240, y: 140, color: '#22d3ee', label: 'Primary zone', coords: [31.1471, 75.3412] }, // Punjab
+    { x: 150, y: 90, color: '#ec4899', label: 'Risk zone', coords: [28.6139, 77.2090] },     // Delhi
+    { x: 480, y: 100, color: '#10b981', label: 'Safe zone', coords: [26.4499, 80.3319] },    // Kanpur
+    { x: 650, y: 200, color: '#f59e0b', label: 'Caution zone', coords: [19.0760, 72.8777] }, // Mumbai
+    { x: 120, y: 240, color: '#8b5cf6', label: 'Data point', coords: [13.0827, 80.2707] },   // Chennai
   ]
 
   return (
-    <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(145deg,rgba(8,15,32,0.98),rgba(2,6,23,0.98))] p-6 text-slate-100 shadow-[0_24px_60px_rgba(8,15,32,0.55)] backdrop-blur-xl animate-slide-up">
+    <section className="rounded-[30px] border border-white/10 bg-[linear-gradient(145deg,rgba(8,15,32,0.98),rgba(2,6,23,0.98))] p-6 text-slate-100 shadow-[0_24px_60px_rgba(8,15,32,0.55)] backdrop-blur-xl animate-slide-up h-full flex flex-col">
       <style>{`
         @keyframes wave {
           0% { r: 0; opacity: 0.8; }
@@ -60,12 +51,12 @@ export default function MapView({ onLocationSelect, currentPin }) {
           <h2 className="mt-2 text-2xl font-semibold text-white">Interactive climate map</h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-slate-300">Click any point to inspect the local exposure profile, then submit a story tied to that exact location.</p>
         </div>
-        <div className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-100 animate-float">Live pulse</div>
+        <div className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-100 animate-float whitespace-nowrap">Live pulse</div>
       </div>
 
-      <div className="mt-6 rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,#0f172a_0%,#111827_45%,#020617_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_18px_40px_rgba(2,6,23,0.45)]">
-        <div className="relative rounded-[24px] border border-white/10 bg-[radial-gradient(circle_at_top,_#172554_0%,_#0f172a_45%,_#020617_100%)] shadow-[0_18px_40px_rgba(15,23,42,0.45)] overflow-hidden">
-          <svg width="100%" height="288" viewBox="0 0 800 288" preserveAspectRatio="xMidYMid slice" className="w-full">
+      <div className="mt-6 flex-1 rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,#0f172a_0%,#111827_45%,#020617_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_18px_40px_rgba(2,6,23,0.45)] relative flex flex-col">
+        <div className="relative flex-1 rounded-[24px] border border-white/10 bg-[radial-gradient(circle_at_top,_#172554_0%,_#0f172a_45%,_#020617_100%)] shadow-[0_18px_40px_rgba(15,23,42,0.45)] overflow-hidden min-h-[300px]">
+          <svg width="100%" height="100%" viewBox="0 0 800 288" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 w-full h-full">
             <defs>
               <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
                 <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#38bdf8" strokeWidth="0.5" opacity="0.1" />
@@ -76,8 +67,8 @@ export default function MapView({ onLocationSelect, currentPin }) {
               </radialGradient>
             </defs>
 
-            <rect width="800" height="288" fill="url(#mapGradient)" />
-            <rect width="800" height="288" fill="url(#grid)" />
+            <rect width="100%" height="100%" fill="url(#mapGradient)" />
+            <rect width="100%" height="100%" fill="url(#grid)" />
 
             <circle cx="100" cy="80" r="50" fill="#22d3ee" opacity="0.1" />
             <circle cx="700" cy="220" r="60" fill="#a855f7" opacity="0.08" />
@@ -99,19 +90,20 @@ export default function MapView({ onLocationSelect, currentPin }) {
 
             {currentPin && (
               <>
-                <circle cx="240" cy="140" r="20" fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.6" style={{ animation: 'wave 2s ease-out infinite' }} />
-                <circle cx="240" cy="140" r="15" fill="none" stroke="#ef4444" strokeWidth="1" opacity="0.4" style={{ animation: 'wave 2s ease-out infinite 0.3s' }} />
+                <circle cx="400" cy="144" r="20" fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.6" style={{ animation: 'wave 2s ease-out infinite' }} />
+                <circle cx="400" cy="144" r="15" fill="none" stroke="#ef4444" strokeWidth="1" opacity="0.4" style={{ animation: 'wave 2s ease-out infinite 0.3s' }} />
+                <circle cx="400" cy="144" r="5" fill="#ef4444" className="drop-shadow-lg" />
               </>
             )}
           </svg>
 
           {currentPin ? (
             <div className="absolute bottom-4 left-4 rounded-2xl border border-rose-400/30 bg-rose-400/10 px-3 py-2 text-xs text-rose-100 backdrop-blur-sm">
-              Selected: {currentPin.lat.toFixed(4)}, {currentPin.lng.toFixed(4)}
+              Selected: {currentPin[0].toFixed(4)}, {currentPin[1].toFixed(4)}
             </div>
           ) : null}
           {hoveredPin ? (
-            <div className="absolute right-4 top-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs text-cyan-100 backdrop-blur-sm">Hover: {hoveredPin}</div>
+            <div className="absolute right-4 top-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs text-cyan-100 backdrop-blur-sm z-10">Hover: {hoveredPin}</div>
           ) : null}
         </div>
 
