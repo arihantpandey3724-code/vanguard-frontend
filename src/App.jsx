@@ -4,6 +4,7 @@ import MapView from './components/MapView';
 import StoryForm from './components/StoryForm';
 import StoryList from './components/StoryList';
 import { analyzeLocation } from './apiClient';
+import ClimateReporter from './components/ClimateReporter';
 
 export default function App() {
   const [climateData, setClimateData] = useState(null);
@@ -105,16 +106,9 @@ export default function App() {
       );
     }
 
-    // 4. REPORTS TAB (Holding space for the AI Chatbot)
+    // 4. REPORTS TAB (Functional Interface)
     if (activeTab === 'Reports') {
-      return (
-        <div className="flex flex-col items-center justify-center h-[50vh] border border-slate-800 border-dashed rounded-3xl animate-fade-in bg-bg-card/50">
-          <div className="h-3 w-3 rounded-full bg-brand-cyan mb-4 animate-ping"></div>
-          <p className="text-slate-400 font-mono uppercase tracking-widest">
-            AI Assistant Module offline. Awaiting Chatbot connection...
-          </p>
-        </div>
-      );
+      return <ClimateReporter />;
     }
   };
 
