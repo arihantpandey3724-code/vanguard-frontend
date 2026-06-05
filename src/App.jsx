@@ -49,57 +49,55 @@ export default function App() {
   };
 
   const renderContent = () => {
-    if (activeTab === 'Dashboard') {
+   if (activeTab === 'Dashboard') {
       return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
-          <div className="lg:col-span-3 space-y-8">
-            <MetricsPanel data={climateData} isLoading={loading} error={error} />
-            {/* Added a light border and shadow here for the map container */}
-            <div className="h-[500px] w-full rounded-3xl overflow-hidden border border-stone-300 shadow-md">
-              <MapView
-                onLocationSelect={handleLocationSelect}
-                currentPin={selectedPosition}
-                stories={stories}
-              />
+        <div className="w-full px-8 animate-fade-in pb-12 space-y-8">
+          {/* HARDCODED FACT SECTION */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm">
+              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Displacement Reality</p>
+              <p className="text-stone-700 mt-3 text-sm leading-relaxed">Up to 40 Million people in South Asia could be forced to relocate internally by 2050 as rural livelihoods unravel[cite: 30].</p>
+            </div>
+            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm">
+              <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Lethal Thresholds</p>
+              <p className="text-stone-700 mt-3 text-sm leading-relaxed">Global temperatures have risen 1.2°C - 1.4°C. When daytime temperatures breach 45°C and humidity spikes, the human body cannot cool itself[cite: 9, 12].</p>
+            </div>
+            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm">
+              <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Water Crisis</p>
+              <p className="text-stone-700 mt-3 text-sm leading-relaxed">The deepest catalyst for displacement is water scarcity. India is drawing down aquifers at unsustainable rates[cite: 41, 42].</p>
             </div>
           </div>
-          <div className="space-y-8 lg:col-span-1">
-            <StoryList
-              selectedStoryId={selectedStoryId}
-              onSelectStory={setSelectedStoryId}
-            />
-            <StoryForm
-              latitude={selectedPosition?.[0] || null}
-              longitude={selectedPosition?.[1] || null}
-              onSubmitted={handleStorySubmitted}
-            />
-          </div>
+
         </div>
       );
     }
 
     if (activeTab === 'Map') {
       return (
-        <div className="animate-fade-in space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-stone-900">Global Radar</h2>
-              <p className="text-stone-500 text-sm mt-1">
-                Select any point on India to run a real-time Vanguard Engine analysis.
-              </p>
-            </div>
+        <div className="animate-fade-in space-y-6 flex flex-col items-center">
+          
+          {/* Header section - Now centered */}
+          <div className="text-center w-full">
+            <h2 className="text-2xl font-semibold text-stone-900">Global Radar</h2>
+            <p className="text-stone-500 text-sm mt-1">
+              Select any point on India to run a real-time Vanguard Engine analysis.
+            </p>
             {selectedPosition && (
-              <div className="bg-white border border-stone-300 px-4 py-2 rounded-xl text-sm font-mono text-emerald-700 shadow-sm">
+              <div className="inline-block mt-3 bg-white border border-stone-300 px-4 py-2 rounded-xl text-sm font-mono text-emerald-700 shadow-sm">
                 LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
               </div>
             )}
           </div>
 
+          {/* Metrics Panel - Centered */}
           {(climateData || loading || error) && (
-            <MetricsPanel data={climateData} isLoading={loading} error={error} />
+            <div className="w-full max-w-4xl">
+              <MetricsPanel data={climateData} isLoading={loading} error={error} />
+            </div>
           )}
 
-          <div className="h-[65vh] rounded-3xl overflow-hidden border border-stone-300 shadow-xl">
+          {/* Map Container - Centered */}
+          <div className="h-[65vh] w-full max-w-6xl rounded-3xl overflow-hidden border border-stone-300 shadow-xl">
             <MapView
               onLocationSelect={handleLocationSelect}
               currentPin={selectedPosition}
