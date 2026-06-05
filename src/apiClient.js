@@ -35,10 +35,9 @@ export async function analyzeLocation(lat, lng) {
   });
 }
 
-
-export async function sendChatMessage(query, context) {
-  return request('/chat', {
+export async function generateReport(location) {
+  return request('/generate-report', {
     method: 'POST',
-    body: JSON.stringify({ user_query: query, local_context: context })
+    body: JSON.stringify({ location: location })
   });
 }

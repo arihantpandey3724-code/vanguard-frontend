@@ -32,10 +32,8 @@ export default function App() {
     }
   };
 
-  // --- UPGRADED TAB LOGIC ---
   const renderContent = () => {
     
-    // 1. DASHBOARD TAB
     if (activeTab === 'Dashboard') {
       return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
@@ -52,15 +50,14 @@ export default function App() {
               onSelectStory={setSelectedStoryId} 
             />
             <StoryForm 
-              latitude={selectedPosition ? selectedPosition[0] : null} 
-              longitude={selectedPosition ? selectedPosition[1] : null} 
+              latitude={selectedPosition?.[0] || null} 
+              longitude={selectedPosition?.[1] || null} 
             />
           </div>
         </div>
       );
     }
 
-    // 2. MAP TAB (Full Screen View)
     if (activeTab === 'Map') {
       return (
         <div className="animate-fade-in space-y-6">
@@ -71,18 +68,17 @@ export default function App() {
             </div>
             {selectedPosition && (
                <div className="bg-slate-800/50 border border-slate-700 px-4 py-2 rounded-xl text-sm font-mono text-brand-cyan">
-                 LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
+                  LAT: {selectedPosition[0].toFixed(4)} | LNG: {selectedPosition[1].toFixed(4)}
                </div>
             )}
           </div>
           <div className="h-[65vh] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
-             <MapView onLocationSelect={handleLocationSelect} currentPin={selectedPosition} />
+              <MapView onLocationSelect={handleLocationSelect} currentPin={selectedPosition} />
           </div>
         </div>
       );
     }
 
-    // 3. STORIES TAB (Dedicated Feed)
     if (activeTab === 'Stories') {
       return (
         <div className="animate-fade-in max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -91,8 +87,8 @@ export default function App() {
                 <h2 className="text-xl font-semibold text-white mb-2">Submit Intel</h2>
                 <p className="text-slate-400 text-sm mb-6">Your survival strategies are verified by AI before joining the global database.</p>
                 <StoryForm 
-                  latitude={selectedPosition ? selectedPosition[0] : null} 
-                  longitude={selectedPosition ? selectedPosition[1] : null} 
+                  latitude={selectedPosition?.[0] || null} 
+                  longitude={selectedPosition?.[1] || null} 
                 />
               </div>
            </div>
@@ -106,7 +102,6 @@ export default function App() {
       );
     }
 
-    // 4. REPORTS TAB (Functional Interface)
     if (activeTab === 'Reports') {
       return <ClimateReporter />;
     }
