@@ -1,41 +1,4 @@
-import { useEffect, useState } from 'react';
-import { getStories } from '../apiClient';
-
-export default function StoryList({ selectedStoryId, onSelectStory }) {
-  const [stories, setStories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadStories() {
-      setLoading(true);
-      setError('');
-
-      try {
-        const data = await getStories();
-        if (mounted) {
-          setStories(Array.isArray(data) ? data : data?.stories || []);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err.message || 'Unable to load community stories.');
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadStories();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
+export default function StoryList({ stories = [], selectedStoryId, onSelectStory }) {
   return (
     // Container: Warm Alabaster/Oatmeal background with Deep Forest Green text
     <section className="rounded-[30px] border border-[#162B22]/15 bg-[#F4F3EE] p-6 text-[#162B22] shadow-lg backdrop-blur-md animate-slide-up">
@@ -49,15 +12,7 @@ export default function StoryList({ selectedStoryId, onSelectStory }) {
         <div className="rounded-full border border-[#E07A5F]/40 bg-[#E07A5F]/10 px-3 py-1 text-xs font-bold text-[#C85A3F]">Backend driven</div>
       </div>
 
-      {loading ? (
-        <div className="mt-6 rounded-3xl border border-[#6B8E23]/30 bg-white p-5 text-sm font-medium text-[#162B22]">Loading stories from the API…</div>
-      ) : null}
-
-      {error ? (
-        <div className="mt-6 rounded-3xl border border-[#E07A5F]/40 bg-[#E07A5F]/10 p-5 text-sm font-medium text-[#C85A3F]">{error}</div>
-      ) : null}
-
-      {!loading && !error && stories.length === 0 ? (
+      {stories.length === 0 ? (
         <div className="mt-6 rounded-3xl border border-[#6B8E23]/30 bg-white p-5 text-sm font-medium text-[#162B22]">No stories are available yet. Submit the first one from the panel.</div>
       ) : null}
 

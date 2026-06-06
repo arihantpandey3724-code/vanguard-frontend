@@ -18,13 +18,16 @@ export default function App() {
   const [selectedStoryId, setSelectedStoryId] = useState(null);
   const [stories, setStories] = useState([]);
 
-  // --- Dashboard Geolocation States ---
   const [isLocating, setIsLocating] = useState(false);
   const [geoError, setGeoError] = useState(null);
 
   useEffect(() => {
     handleLocationSelect(28.6139, 77.2090);
-    fetchStories();
+        fetchStories();
+    const storyTimer = setInterval(() => {
+      fetchStories();
+    }, 1000);
+    return () => clearInterval(storyTimer);
   }, []);
 
   const fetchStories = async () => {
@@ -68,7 +71,6 @@ export default function App() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setIsLocating(false);
-        // This single call updates the Weather Widget, the Map, and the Metrics Panel!
         handleLocationSelect(position.coords.latitude, position.coords.longitude);
       },
       (error) => {
@@ -80,7 +82,7 @@ export default function App() {
   };
 
   const renderContent = () => {
-   if (activeTab === 'Dashboard') {
+    if (activeTab === 'Dashboard') {
       return (
         <div className="w-full px-8 animate-fade-in pb-12 space-y-6">
           
@@ -119,20 +121,84 @@ export default function App() {
           {/* --- UPGRADED GRID: Facts on the left, AI on the right --- */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
             
-            {/* Left Side: The 3 Facts */}
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Displacement Reality</p>
-                <p className="text-stone-700 mt-3 text-sm leading-relaxed">Up to 40 Million people in South Asia could be forced to relocate internally by 2050 as rural livelihoods unravel.</p>
+            {/* Left Side: The Facts & Table */}
+            <div className="lg:col-span-2 flex flex-col gap-6">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Fact 1 */}
+                <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-3">Displacement Reality</p>
+                  <ul className="text-stone-700 text-sm leading-relaxed space-y-2 list-disc pl-4">
+                    <li><strong>40M Migrants:</strong> The World Bank Groundswell report projects up to 40 million internal climate migrants in South Asia by 2050.</li>
+                    <li><strong>Phased Triggers:</strong> Relocation triggers sequentially: agricultural crop yields fail first, followed by lethal outdoor labor, and finally unviable cooling costs.</li>
+                    <li><strong>Urban Drift:</strong> Populations will predictably flow from resource-depleted rural grids into heavily strained regional city centers.</li>
+                  </ul>
+                </div>
+
+                {/* Fact 2 */}
+                <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest mb-3">Lethal Thresholds</p>
+                  <ul className="text-stone-700 text-sm leading-relaxed space-y-2 list-disc pl-4">
+                    <li><strong>Baseline Shift:</strong> Global temperatures have risen 1.2°C - 1.4°C over 50 years, establishing a permanent baseline of extreme thermal waves.</li>
+                    <li><strong>Wet-Bulb Limit:</strong> When daytime temperatures breach 45°C alongside high humidity, natural perspiration loses cooling efficacy.</li>
+                    <li><strong>Zero Recovery:</strong> Elevated night temperatures disrupt metabolic rest cycles, triggering acute systemic human strain.</li>
+                  </ul>
+                </div>
+
+                {/* Fact 3 */}
+                <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
+                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-3">Water Crisis & Extraction</p>
+                  <ul className="text-stone-700 text-sm leading-relaxed space-y-2 list-disc pl-4">
+                    <li><strong>The Primary Catalyst:</strong> While extreme heat dominates the news, severe water scarcity is the deepest structural driver of displacement.</li>
+                    <li><strong>Satellite Verification:</strong> NASA GRACE satellite data confirms northwest India has lost 109 km³ of groundwater—double the capacity of its largest surface reservoir.</li>
+                    <li><strong>Imminent Exhaustion:</strong> At current extraction rates (reaching 0.49m/year drop in parts of Punjab), regional aquifers are projected to drop below the critical 300m threshold by 2039.</li>
+                  </ul>
+                </div>
               </div>
-              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Lethal Thresholds</p>
-                <p className="text-stone-700 mt-3 text-sm leading-relaxed">Global temperatures have risen 1.2°C - 1.4°C. When daytime temperatures breach 45°C and humidity spikes, the human body cannot cool itself.</p>
+
+              {/* Data Table */}
+              <div className="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm overflow-hidden">
+                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-4">Regional Climate Stress Profiles</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="text-stone-500 uppercase text-[10px] tracking-widest border-b border-stone-200">
+                      <tr>
+                        <th className="pb-3 font-semibold">Target Region</th>
+                        <th className="pb-3 font-semibold">Annual Water Table Loss</th>
+                        <th className="pb-3 font-semibold">Infrastructure Impact</th>
+                        <th className="pb-3 font-semibold whitespace-nowrap">Est. Displacement</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-stone-800">
+                      <tr className="border-b border-stone-100 hover:bg-stone-50 transition-colors">
+                        <td className="py-3 font-medium pr-4">North-West India</td>
+                        <td className="py-3 text-rose-600 font-medium pr-4">Critically High (&gt; 4.5m/yr)</td>
+                        <td className="py-3 pr-4">Severe deep aquifer exhaustion</td>
+                        <td className="py-3 font-bold text-stone-900">2032</td>
+                      </tr>
+                      <tr className="border-b border-stone-100 hover:bg-stone-50 transition-colors">
+                        <td className="py-3 font-medium pr-4">Punjab / Haryana</td>
+                        <td className="py-3 text-rose-500 font-medium pr-4">Extreme (~0.49m/yr avg)</td>
+                        <td className="py-3 pr-4">300m aquifer threshold breached</td>
+                        <td className="py-3 font-bold text-stone-900">2039</td>
+                      </tr>
+                      <tr className="border-b border-stone-100 hover:bg-stone-50 transition-colors">
+                        <td className="py-3 font-medium pr-4">Gangetic Plain</td>
+                        <td className="py-3 text-amber-600 font-medium pr-4">Moderate (1.8m/yr)</td>
+                        <td className="py-3 pr-4">Lethal combined humidity profiles</td>
+                        <td className="py-3 font-bold text-stone-900">2040</td>
+                      </tr>
+                      <tr className="hover:bg-stone-50 transition-colors">
+                        <td className="py-3 font-medium pr-4">Coastal Territories</td>
+                        <td className="py-3 text-cyan-600 font-medium pr-4">High Salinity Contamination</td>
+                        <td className="py-3 pr-4">Saltwater intrusion in drinking wells</td>
+                        <td className="py-3 font-bold text-stone-900">2045</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
-                <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Water Crisis</p>
-                <p className="text-stone-700 mt-3 text-sm leading-relaxed">The deepest catalyst for displacement is water scarcity. India is drawing down aquifers at unsustainable rates.</p>
-              </div>
+
             </div>
 
             {/* Right Side: The Vanguard AI Assistant */}
@@ -192,7 +258,7 @@ export default function App() {
             <div className="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm">
               <h2 className="text-xl font-semibold text-stone-900 mb-2">Submit Intel</h2>
               <p className="text-stone-500 text-sm mb-6">
-                Your survival strategies are verified by AI before joining the global database.
+                Your survival strategies are verified before joining the global database.
               </p>
               <StoryForm
                 latitude={selectedPosition?.[0] || null}
@@ -204,6 +270,7 @@ export default function App() {
           </div>
           <div>
             <StoryList
+              stories={stories}
               selectedStoryId={selectedStoryId}
               onSelectStory={setSelectedStoryId}
             />
@@ -218,8 +285,8 @@ export default function App() {
   };
 
   return (
-<div className="min-h-screen bg-stone-100 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-stone-50 to-stone-200 text-stone-900 selection:bg-stone-800 selection:text-white transition-colors duration-500 relative overflow-hidden">
-    <div 
+    <div className="min-h-screen bg-stone-100 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-stone-50 to-stone-200 text-stone-900 selection:bg-stone-800 selection:text-white transition-colors duration-500 relative overflow-hidden">
+      <div 
         className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-multiply" 
         style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/wood-pattern.png')" }}
       ></div>

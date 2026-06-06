@@ -9,9 +9,25 @@ async function request(path, options = {}) {
     ...options,
   });
 
-  if (!response.ok) {
+if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || 'Request failed');
+    let cleanMessage = 'An unexpected error occurred. Please try again.';
+
+    try {
+      const errorJson = JSON.parse(errorText);
+      if (errorJson.detail && Array.isArray(errorJson.detail)) {
+        cleanMessage = errorJson.detail[0].msg; 
+      } 
+      else if (errorJson.detail && typeof errorJson.detail === 'string') {
+        cleanMessage = errorJson.detail;
+      } 
+      else if (errorJson.message) {
+        cleanMessage = errorJson.message;
+      }
+    } catch (e) {
+      if (errorText) cleanMessage = errorText;
+    }
+    throw new Error(cleanMessage);
   }
 
   return response.status === 204 ? null : response.json();
@@ -25,7 +41,13 @@ export async function submitStory(data) {
 }
 
 export async function getStories() {
-  return request('/get-stories');
+  return request(`/get-stories?t=${Date.now()}`, { 
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    }
+  });
 }
 
 export async function analyzeLocation(lat, lng) {
