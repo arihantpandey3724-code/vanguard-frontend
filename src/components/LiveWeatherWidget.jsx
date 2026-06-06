@@ -50,54 +50,54 @@ export default function LiveWeatherWidget({ latitude, longitude }) {
         </p>
       </div>
 
-      {/* UPGRADED GRID: 3 Columns for 6 Metrics */}
+      {/* UPGRADED GRID: 3 Columns for 6 Metrics with Improved Hierarchy */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         
         {/* Actual Temperature */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Temperature</p>
-          <p className="text-3xl font-extrabold text-[#2C1E16]">
-            {weather.temperature_2m}<span className="text-lg text-stone-400 ml-0.5">°C</span>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Temperature</p>
+          <p className="text-3xl font-bold text-slate-800 flex items-baseline">
+            {weather.temperature_2m}<span className="text-lg font-medium text-slate-500 ml-1">°C</span>
           </p>
         </div>
 
-        {/* Apparent (Feels Like) Temperature */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-rose-500/70 uppercase tracking-wider mb-1">Feels Like</p>
-          <p className="text-3xl font-extrabold text-rose-900">
-            {weather.apparent_temperature}<span className="text-lg text-rose-400 ml-0.5">°C</span>
+        {/* Apparent (Feels Like) Temperature - Urgent Red Theme */}
+        <div className="bg-white rounded-2xl p-4 border border-red-100 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">Feels Like</p>
+          <p className="text-3xl font-bold text-red-700 flex items-baseline">
+            {weather.apparent_temperature}<span className="text-lg font-medium text-red-500 ml-1">°C</span>
           </p>
         </div>
 
         {/* Humidity */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Humidity</p>
-          <p className="text-3xl font-extrabold text-[#162B22]">
-            {weather.relative_humidity_2m}<span className="text-lg text-stone-400 ml-0.5">%</span>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Humidity</p>
+          <p className="text-3xl font-bold text-slate-800 flex items-baseline">
+            {weather.relative_humidity_2m}<span className="text-lg font-medium text-slate-500 ml-1">%</span>
           </p>
         </div>
 
-        {/* Precipitation */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-sky-600/70 uppercase tracking-wider mb-1">Precipitation</p>
-          <p className="text-3xl font-extrabold text-[#006064]">
-            {weather.precipitation}<span className="text-lg text-sky-600/50 ml-0.5">mm</span>
+        {/* Precipitation - Water Blue Theme */}
+        <div className="bg-white rounded-2xl p-4 border border-sky-100 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-sky-600 uppercase tracking-wider mb-1">Precipitation</p>
+          <p className="text-3xl font-bold text-sky-700 flex items-baseline">
+            {weather.precipitation}<span className="text-lg font-medium text-sky-500 ml-1">mm</span>
           </p>
         </div>
 
         {/* Cloud Cover */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Cloud Cover</p>
-          <p className="text-3xl font-extrabold text-stone-600">
-            {weather.cloud_cover}<span className="text-lg text-stone-400 ml-0.5">%</span>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Cloud Cover</p>
+          <p className="text-3xl font-bold text-slate-800 flex items-baseline">
+            {weather.cloud_cover}<span className="text-lg font-medium text-slate-500 ml-1">%</span>
           </p>
         </div>
 
         {/* Wind Speed */}
-        <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm transition-transform hover:scale-[1.02]">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Wind Speed</p>
-          <p className="text-3xl font-extrabold text-stone-700">
-            {weather.wind_speed_10m}<span className="text-lg text-stone-400 ml-0.5">km/h</span>
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Wind Speed</p>
+          <p className="text-3xl font-bold text-slate-800 flex items-baseline">
+            {weather.wind_speed_10m}<span className="text-lg font-medium text-slate-500 ml-1">km/h</span>
           </p>
         </div>
 
