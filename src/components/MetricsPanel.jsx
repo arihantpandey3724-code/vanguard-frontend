@@ -33,13 +33,11 @@ export default function MetricsPanel({ data, isLoading, error, onDetectLocation 
   const trend = data?.status || 'SAFE'
   const utility = data?.migration_pipeline?.destination_utility_surge_percent ?? 68
 
-  const trendData = [
-    { month: 'Now', habitability, stress: waterStress },
-    { month: '+1d', habitability: Math.max(40, habitability - 2), stress: Math.min(100, waterStress + 3) },
-    { month: '+3d', habitability: Math.max(38, habitability - 5), stress: Math.min(100, waterStress + 6) },
-    { month: '+7d', habitability: Math.max(35, habitability - 8), stress: Math.min(100, waterStress + 9) },
-    { month: '+14d', habitability: Math.max(30, habitability - 12), stress: Math.min(100, waterStress + 12) },
-  ]
+ const trendData = data?.timeline?.decadal_trend?.map(item => ({
+    label: item.decade, // Maps to '0y', '10y', etc.
+    habitability: item.score,
+    stress: Math.max(0, 100 - item.score) // Derived inverse stress
+  })) || [];
 
   const metricsData = [
     { name: 'Wet Bulb', value: wetBulb },
@@ -152,6 +150,7 @@ export default function MetricsPanel({ data, isLoading, error, onDetectLocation 
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
+       {/* --- UPDATED CHARTS --- */}
         <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
           <p className="text-xs uppercase tracking-[0.35em] text-stone-500 font-medium">Habitability trend</p>
           <div className="mt-4 h-64">
@@ -164,8 +163,8 @@ export default function MetricsPanel({ data, isLoading, error, onDetectLocation 
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" domain={[60, 80]} />
+                <XAxis dataKey="label" stroke="#6b7280" /> {/* Changed from month to label */}
+                <YAxis stroke="#6b7280" domain={[0, 100]} /> {/* Updated domain to 0-100 for better decadal visibility */}
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="habitability" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#habitability)" isAnimationActive={true} />
               </AreaChart>
@@ -179,8 +178,8 @@ export default function MetricsPanel({ data, isLoading, error, onDetectLocation 
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" domain={[40, 65]} />
+                <XAxis dataKey="label" stroke="#6b7280" /> {/* Changed from month to label */}
+                <YAxis stroke="#6b7280" domain={[0, 100]} /> {/* Updated domain to 0-100 */}
                 <Tooltip content={<CustomTooltip />} />
                 <Line type="monotone" dataKey="stress" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4 }} isAnimationActive={true} />
               </LineChart>
