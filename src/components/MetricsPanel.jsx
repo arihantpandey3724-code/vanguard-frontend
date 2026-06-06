@@ -22,7 +22,8 @@ function AnimatedNumber({ value, duration = 1500 }) {
   return displayValue
 }
 
-export default function MetricsPanel({ data, isLoading, error }) {
+// 1. NEW: Added onDetectLocation to the props
+export default function MetricsPanel({ data, isLoading, error, onDetectLocation }) {
   const habitability = data?.habitability_score ?? 72
   const wetBulb = data?.metrics?.current_wet_bulb_celsius ?? 31
   const waterStress = data?.domino_effect?.water_stress_index ?? 58
@@ -53,11 +54,10 @@ export default function MetricsPanel({ data, isLoading, error }) {
         ? 'from-amber-400 via-orange-500 to-rose-500'
         : 'from-emerald-400 via-teal-500 to-cyan-500'
 
-
   const envImages = {
-    SAFE: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200", // Lush green mountains
-    WARNING: "https://images.unsplash.com/photo-1544866635-f093a2019ea4?auto=format&fit=crop&q=80&w=1200", // Dry yellow agricultural field
-    CRITICAL: "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=1200", // Cracked, barren earth
+    SAFE: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200", 
+    WARNING: "https://images.unsplash.com/photo-1544866635-f093a2019ea4?auto=format&fit=crop&q=80&w=1200", 
+    CRITICAL: "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=1200", 
   };
 
   const currentImage = envImages[trend] || envImages.SAFE;
@@ -75,13 +75,11 @@ export default function MetricsPanel({ data, isLoading, error }) {
   }
 
   return (
-    // Changed from dark navy to light stone-50, text to stone-800
     <section className="rounded-[30px] border border-stone-200 bg-stone-50 p-6 text-stone-800 shadow-[0_22px_55px_rgba(0,0,0,0.08)] backdrop-blur-xl animate-fade-in w-full max-w-4xl">
       
       {/* HEADER SECTION */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          {/* Changed text colors to light theme equivalents */}
           <p className="text-[11px] uppercase tracking-[0.35em] text-emerald-600 font-bold">Analytics</p>
           <h2 className="mt-2 text-2xl font-black tracking-tight text-stone-900">Resilience overview</h2>
           <p className="mt-2 text-sm text-stone-500">Graphical signals from the latest backend analysis.</p>
@@ -107,16 +105,35 @@ export default function MetricsPanel({ data, isLoading, error }) {
 
       {error ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 font-medium">{error}</div> : null}
       {isLoading ? <div className="mt-5 rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm text-cyan-800 font-medium">Analyzing the selected location from the backend…</div> : null}
-        <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        
+        {/* --- 2. UPGRADED: Total Status Card with Detect Location Button --- */}
         <article className={`rounded-[28px] border border-stone-200 bg-gradient-to-br ${tone} p-5 text-white shadow-lg transition-all duration-300 hover:scale-[1.02]`}>
-          <p className="text-xs uppercase tracking-[0.35em] text-white/90 font-medium">Total status</p>
-          <h3 className="mt-3 text-4xl font-black tracking-tight md:text-5xl"><AnimatedNumber value={habitability} />%</h3>
-          <p className="mt-2 text-sm text-white/90">Habitability score</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-white/90 font-medium">Total status</p>
+              <h3 className="mt-3 text-4xl font-black tracking-tight md:text-5xl"><AnimatedNumber value={habitability} />%</h3>
+              <p className="mt-2 text-sm text-white/90">Habitability score</p>
+            </div>
+            
+            <button 
+              onClick={onDetectLocation} 
+              className="mt-1 flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 transition-all active:scale-95 text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              </svg>
+              Detect Location
+            </button>
+          </div>
+
           <div className="mt-5 h-2 w-full rounded-full bg-black/20">
             <div className="h-2 rounded-full bg-white transition-all duration-1000" style={{ width: `${habitability}%` }} />
           </div>
           <p className="mt-3 text-xs uppercase tracking-[0.25em] text-white/90 font-medium">Status: {trend}</p>
         </article>
+        {/* --- END UPGRADED CARD --- */}
 
         <article className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
           {[

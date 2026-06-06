@@ -7,6 +7,7 @@ import StoryList from './components/StoryList';
 import { analyzeLocation, getStories } from './apiClient';
 import ClimateReporter from './components/ClimateReporter';
 import LiveWeatherWidget from './components/LiveWeatherWidget';
+import DashboardChat from './components/DashboardChat'; 
 
 export default function App() {
   const [climateData, setClimateData] = useState(null);
@@ -17,7 +18,7 @@ export default function App() {
   const [selectedStoryId, setSelectedStoryId] = useState(null);
   const [stories, setStories] = useState([]);
 
-  // --- NEW: Dashboard Geolocation States ---
+  // --- Dashboard Geolocation States ---
   const [isLocating, setIsLocating] = useState(false);
   const [geoError, setGeoError] = useState(null);
 
@@ -53,7 +54,7 @@ export default function App() {
     fetchStories();
   };
 
-  // --- NEW: HTML5 Geolocation Logic for the Dashboard ---
+  // --- HTML5 Geolocation Logic for the Dashboard & Map ---
   const handleLiveLocation = () => {
     setGeoError(null);
 
@@ -83,7 +84,7 @@ export default function App() {
       return (
         <div className="w-full px-8 animate-fade-in pb-12 space-y-6">
           
-          {/* --- NEW: Dashboard Header & Live Button --- */}
+          {/* --- Dashboard Header & Live Button --- */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
             <div>
               <h2 className="text-2xl font-bold text-[#2C1E16]">Command Center</h2>
@@ -115,20 +116,30 @@ export default function App() {
             longitude={selectedPosition?.[1]} 
           />
 
-          {/* HARDCODED FACT SECTION */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Displacement Reality</p>
-              <p className="text-stone-700 mt-3 text-sm leading-relaxed">Up to 40 Million people in South Asia could be forced to relocate internally by 2050 as rural livelihoods unravel.</p>
+          {/* --- UPGRADED GRID: Facts on the left, AI on the right --- */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+            
+            {/* Left Side: The 3 Facts */}
+            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Displacement Reality</p>
+                <p className="text-stone-700 mt-3 text-sm leading-relaxed">Up to 40 Million people in South Asia could be forced to relocate internally by 2050 as rural livelihoods unravel.</p>
+              </div>
+              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Lethal Thresholds</p>
+                <p className="text-stone-700 mt-3 text-sm leading-relaxed">Global temperatures have risen 1.2°C - 1.4°C. When daytime temperatures breach 45°C and humidity spikes, the human body cannot cool itself.</p>
+              </div>
+              <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
+                <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Water Crisis</p>
+                <p className="text-stone-700 mt-3 text-sm leading-relaxed">The deepest catalyst for displacement is water scarcity. India is drawing down aquifers at unsustainable rates.</p>
+              </div>
             </div>
-            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">Lethal Thresholds</p>
-              <p className="text-stone-700 mt-3 text-sm leading-relaxed">Global temperatures have risen 1.2°C - 1.4°C. When daytime temperatures breach 45°C and humidity spikes, the human body cannot cool itself.</p>
+
+            {/* Right Side: The Vanguard AI Assistant */}
+            <div className="lg:col-span-1">
+              <DashboardChat />
             </div>
-            <div className="bg-stone-50 border border-stone-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Water Crisis</p>
-              <p className="text-stone-700 mt-3 text-sm leading-relaxed">The deepest catalyst for displacement is water scarcity. India is drawing down aquifers at unsustainable rates.</p>
-            </div>
+
           </div>
 
         </div>
@@ -153,7 +164,13 @@ export default function App() {
 
           {(climateData || loading || error) && (
             <div className="w-full max-w-4xl">
-              <MetricsPanel data={climateData} isLoading={loading} error={error} />
+              {/* --- NEW: Wired up the onDetectLocation prop! --- */}
+              <MetricsPanel 
+                data={climateData} 
+                isLoading={loading} 
+                error={error} 
+                onDetectLocation={handleLiveLocation}
+              />
             </div>
           )}
 
@@ -201,9 +218,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-amber-700 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-200 via-amber-500 to-amber-700 text-amber-950 selection:bg-emerald-600 selection:text-white transition-colors duration-500 relative overflow-hidden">
-      
-      <div 
+<div className="min-h-screen bg-stone-100 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-stone-50 to-stone-200 text-stone-900 selection:bg-stone-800 selection:text-white transition-colors duration-500 relative overflow-hidden">
+    <div 
         className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-multiply" 
         style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/wood-pattern.png')" }}
       ></div>
