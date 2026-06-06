@@ -1,12 +1,44 @@
 import { useState } from 'react';
 import { submitStory } from '../apiClient';
 
-export default function StoryForm({ latitude = null, longitude = null, onSubmitted }) {
+export default function StoryForm({ latitude = null, longitude = null, onSubmitted, onLocationSelect }) {
   const [authorName, setAuthorName] = useState('');
   const [location, setLocation] = useState('');
   const [storyText, setStoryText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
+
+  // --- NEW: Geolocation State ---
+  const [isLocating, setIsLocating] = useState(false);
+  const [geoError, setGeoError] = useState(null);
+
+  // --- NEW: HTML5 Geolocation Logic ---
+  const handleLiveLocation = (e) => {
+    e.preventDefault(); 
+    setGeoError(null);
+
+    if (!navigator.geolocation) {
+      setGeoError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setIsLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setIsLocating(false);
+        // Send coordinates back up to App.jsx to move the map pin
+        if (onLocationSelect) {
+          onLocationSelect(position.coords.latitude, position.coords.longitude);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        setGeoError("Location permission denied. Please allow access.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -86,16 +118,43 @@ export default function StoryForm({ latitude = null, longitude = null, onSubmitt
             rows="5"
             value={storyText}
             onChange={(event) => setStoryText(event.target.value)}
-            className="mt-2 w-full rounded-xl border border-[#162B22]/20 bg-white px-4 py-3 text-sm font-medium text-[#2C1E16] placeholder-[#162B22]/40 transition-colors focus:border-[#6B8E23] focus:outline-none focus:ring-2 focus:ring-[#6B8E23]/20"
+            className="mt-2 w-full rounded-xl border border-[#162B22]/20 bg-white px-4 py-3 text-sm font-medium text-[#2C1E16] placeholder-[#162B22]/40 transition-colors focus:border-[#6B8E23] focus:outline-none focus:ring-2 focus:ring-[#6B8E23]/20 resize-none"
             placeholder="Describe what happened, what you adapted, and how your community survived."
           />
         </label>
 
+        {/* --- UPGRADED: Coordinates Section --- */}
         <div className="rounded-2xl border border-[#162B22]/15 bg-white/50 p-4 text-sm shadow-sm">
-          <p className="font-bold text-[#162B22]">Selected coordinates</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-3">
+            <p className="font-bold text-[#162B22]">Selected coordinates</p>
+            
+            {/* Live Location Button styled to match your theme */}
+            <button
+              onClick={handleLiveLocation}
+              disabled={isLocating}
+              className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold px-3 py-1.5 rounded-full border border-[#6B8E23]/30 bg-[#6B8E23]/10 text-[#6B8E23] hover:bg-[#6B8E23]/20 transition-colors disabled:opacity-50"
+            >
+              {isLocating ? (
+                <>
+                  <div className="w-1.5 h-1.5 bg-[#6B8E23] rounded-full animate-ping"></div>
+                  LOCATING...
+                </>
+              ) : (
+                '📍 DETECT LIVE'
+              )}
+            </button>
+          </div>
+
+          {/* Geo Error Display */}
+          {geoError && (
+            <p className="mb-2 text-xs font-semibold text-[#E07A5F]">{geoError}</p>
+          )}
+
           <p className="mt-1 font-medium text-[#162B22]/70">
             {latitude !== null && longitude !== null
-              ? <span className="inline-flex items-center gap-1 rounded-full border border-[#B2EBF2] bg-[#E0F7FA] px-2.5 py-1 text-[11px] font-bold tracking-wider text-[#006064]">Lat {latitude} · Lng {longitude}</span>
+              ? <span className="inline-flex items-center gap-1 rounded-full border border-[#B2EBF2] bg-[#E0F7FA] px-2.5 py-1 text-[11px] font-bold tracking-wider text-[#006064]">
+                  Lat {latitude.toFixed(6)} · Lng {longitude.toFixed(6)}
+                </span>
               : 'Choose a location on the map to enable story submission.'}
           </p>
         </div>
